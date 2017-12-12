@@ -2,8 +2,8 @@ package AcoTsp;
 
 public class Route
 {
-	float distance;//����
-	float pheromone;//��Ϣ�� 
+	float distance;//距离
+	float pheromone;//信息素
 
 	Route()
 	{

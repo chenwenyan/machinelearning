@@ -3,14 +3,13 @@ package AcoTsp;
 import java.util.Random;
 
 //蚂蚁
-public class Ant 
-{
+public class Ant {
 	int[] passed;//已经经过的城市列表（禁忌表）
 	float passedLength=0.0f;//经过的路径长度
 	int curCity;//蚂蚁当前所在城市
 	int curIndex;//蚂蚁当前所在城市下标
 	
-	//��ʼ����������
+	//初始化蚂蚁数据
 	void init()
 	{
 		initPassed();
@@ -19,7 +18,7 @@ public class Ant
 		initBeginCity();
 	}
 	
-	//��ʼ�����ɱ�
+	//初始化禁忌表
 	void initPassed()
 	{
 		passed=new int[Constant.CITY_NUM+1];
@@ -27,7 +26,7 @@ public class Ant
 			passed[i]=Integer.MIN_VALUE;
 	}
 	
-	//��ʼ���������ڳ���
+	//初始化蚂蚁所在城市
 	void initBeginCity()
 	{
 		Random rand=new Random();
@@ -35,23 +34,23 @@ public class Ant
 		reachNextCity(beginCity);
 	}
 	
-	//������һ������
+	//到达下一个城市
 	void reachNextCity(int nextCity)
 	{
-		//�ۼ����ξ���
+		//累加周游距离
 		passedLength += Constant.routes[curCity][nextCity].distance;
 		
-		//ǰ��
+		//前进
 		curCity=nextCity;
 		passed[curIndex++]=nextCity+1;
 	}
 	
-	//�жϳ���nCity�Ƿ��ڽ��ɱ���
+	//判断城市nCity是否在禁忌表中
 	boolean isPassedCity(int nCity)
 	{
 		for(int i=0;passed[i] != Integer.MIN_VALUE;i++)
 		{
-			if(passed[i] == nCity) //���ڵĳ���
+			if(passed[i] == nCity) //存在的城市
 				return true;
 		}
 		return false;

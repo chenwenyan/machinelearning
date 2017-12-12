@@ -1,11 +1,10 @@
 package AcoTsp;
 
 //��һ�����ߵĳ���
-public class canReachCity 
-{
+public class canReachCity {
 	int id;
-	float rate=0.0f;//��ѡ�����
-	float VAP=0.0f;//�ܼ��Ⱥ���Ϣ��Ũ���ܺ�
+	float rate=0.0f;//被选择概率
+	float VAP=0.0f;//能见度和信息素浓度总和
 	
 	canReachCity(int id,float VAP)
 	{
