@@ -1,6 +1,5 @@
 package AcoTsp;
 
-//��һ�����ߵĳ���
 public class canReachCity {
 	int id;
 	float rate=0.0f;//被选择概率
