@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
 
 public class MyID3 {
 
-    private static LinkedList<String> attribute = new LinkedList<String>(); // 存储属性的名称
-    private static LinkedList<ArrayList<String>> attributevalue = new LinkedList<ArrayList<String>>(); // 存储每个属性的取值
+    private static LinkedList<String> attribute = new LinkedList<String>(); // 存储测试属性的名称
+    private static LinkedList<ArrayList<String>> attributevalue = new LinkedList<ArrayList<String>>(); // 存储每个测试属性的取值
     private static LinkedList<String[]> data = new LinkedList<String[]>();// 原始数据
 
     public static final String patternString = "@attribute(.*)[{](.*?)[}]"; //模式匹配属性以及属性取值
@@ -94,8 +94,8 @@ public class MyID3 {
         }
         //计算Entropy(S)计算Entropy(S) 见参考书《机器学习 》Tom.Mitchell著  第3.4.1.2节
         Double entropyS = TheMath.getEntropy(lines.size(), li);
-        //下面计算gain
 
+        //下面计算gain
         List<String> la = attributevalue.get(index);
         List<Point> lasv = new ArrayList<Point>();
         for (int n = 0; n < la.size(); n++) {
@@ -117,7 +117,7 @@ public class MyID3 {
             }
             //计算Entropy(S) 见参考书《机器学习(Tom.Mitchell著)》
             Double entropySv = TheMath.getEntropy(Sv.intValue(), lisub);
-            //
+
             Point p = new Point();
             p.setSv(Sv);
             p.setEntropySv(entropySv);

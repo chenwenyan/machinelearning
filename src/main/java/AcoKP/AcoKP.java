@@ -12,7 +12,7 @@ import java.util.ListIterator;
  */
 public class AcoKP {
 
-    private int NC = 12;//迭代次数
+    private int NC = 20;//迭代次数
     private int antNum = 10;//蚂蚁数量
     private float Q = 300.0f; //用于控制信息素增量到适度范围
     private float rho = 0.3f;//蒸发率
@@ -59,7 +59,7 @@ public class AcoKP {
      */
     public void init(){
         for (int i = 0 ; i < Constant.num; i++) {
-            Res res = new Res(Constant.thing[i][0],Constant.thing[i][1],Constant.pheromone);
+            Res res = new Res(Constant.thing[i][1],Constant.thing[i][0],Constant.pheromone);
             res.setId(i);
             resArrayList.add(res);
         }
@@ -125,7 +125,6 @@ public class AcoKP {
         ArrayList<Ant> ncAnts = new ArrayList<Ant>();//每次迭代的最优解
 
         for (int k = 0; k < NC; k++) {
-
             intAnts();
             for (int m = 0; m < antNum; m++) {
                 Ant curAnt = ants.get(m);
@@ -144,7 +143,7 @@ public class AcoKP {
             }
             //每经过一轮迭代之后，信息素挥发一次
             for (Res item : resArrayList) {
-                item.setPheromone(item.getPheromone() * rho);
+                item.setPheromone(item.getPheromone() * (1-rho));
             }
 
             Ant nc_bestAnt = getBestAnt(ants);

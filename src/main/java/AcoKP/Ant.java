@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Ant {
 
-    private List<Integer> selected = new ArrayList<Integer>();//已经选择的物体id
+    private ArrayList<Integer> selected = new ArrayList<Integer>();//已经选择的物体id
     private float resValue ; //已选择物体的价值
     private float resWeight; //已选择物品重量
 
@@ -19,7 +19,7 @@ public class Ant {
         return selected;
     }
 
-    public void setSelected(List<Integer> selected) {
+    public void setSelected(ArrayList<Integer> selected) {
         this.selected = selected;
     }
 
