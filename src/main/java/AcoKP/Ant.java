@@ -15,7 +15,7 @@ public class Ant {
     private float resValue ; //已选择物体的价值
     private float resWeight; //已选择物品重量
 
-    public List<Integer> getSelected() {
+    public ArrayList<Integer> getSelected() {
         return selected;
     }
 

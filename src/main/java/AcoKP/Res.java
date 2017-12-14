@@ -8,19 +8,18 @@ package AcoKP;
  */
 public class Res {
 
-
-    private int id;
+    private Integer id;
     private float weight;
     private float value;
     private float pheromone;
     private boolean selected;
     private float probability;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

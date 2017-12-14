@@ -12,13 +12,13 @@ import java.util.ListIterator;
  */
 public class AcoKP {
 
-    private int NC = 20;//迭代次数
+    private int NC = 500;//迭代次数
     private int antNum = 10;//蚂蚁数量
-    private float Q = 300.0f; //用于控制信息素增量到适度范围
-    private float rho = 0.3f;//蒸发率
+    private float Q = 20.0f; //用于控制信息素增量到适度范围
+    private float rho = 0.1f;//蒸发系数
 
-    private int alpha = 1;  //信息素重要程度
-    private int beta = 2;   //启发式因子重要程度
+    private float alpha = 3;  //信息素重要程度
+    private float beta = 2;   //启发式因子重要程度
 
     private float eta; //启发式因子
 
@@ -33,6 +33,7 @@ public class AcoKP {
      *
      */
     public void intAnts(){
+        ants.clear();
         for(int i = 0 ; i < antNum; i++){
             Ant ant = new Ant(0.0f,0.0f);
             ants.add(ant);
@@ -105,14 +106,13 @@ public class AcoKP {
         }
 
         //人为返回最后一个物品，精度导致
-        iter = canSelect.listIterator();
-        while(iter.hasNext()){
-            CanSelectRes canSelect1 = iter.next();
-            if(iter.hasNext() == false){
-                return canSelect1.getId();
-            }
-        }
-
+//        iter = canSelect.listIterator();
+//        while(iter.hasNext()){
+//            CanSelectRes canSelect1 = iter.next();
+//            if(iter.hasNext() == false){
+//                return canSelect1.getId();
+//            }
+//        }
         return Integer.MAX_VALUE;
     }
 
@@ -128,31 +128,40 @@ public class AcoKP {
             intAnts();
             for (int m = 0; m < antNum; m++) {
                 Ant curAnt = ants.get(m);
-
-                Res res = resArrayList.get(getMaxP(curAnt,resArrayList));
-                if ((curAnt.getResWeight() + res.getWeight()) <= Constant.capacity) {
-
-                    //选中后，信息素浓度增加
-                    float delta = Q / curAnt.getResValue(); //信息素增量
-                    res.setPheromone(delta + res.getPheromone());
-                    resArrayList.set(res.getId(), res);//更新物品中的信息素浓度大小
-                    curAnt.setResValue(curAnt.getResValue() + res.getValue());
-                    curAnt.setResWeight(curAnt.getResWeight() + res.getWeight());
-                    curAnt.getSelected().add(res.getId());
+                for(int q = 0 ; q < Constant.num; q++){
+                    Res res = resArrayList.get(getMaxP(curAnt,resArrayList));
+                    if ((curAnt.getResWeight() + res.getWeight()) <= Constant.capacity) {
+                        curAnt.setResValue(curAnt.getResValue() + res.getValue());
+                        curAnt.setResWeight(curAnt.getResWeight() + res.getWeight());
+                        curAnt.getSelected().add(res.getId());
+                    }
                 }
             }
-            //每经过一轮迭代之后，信息素挥发一次
-            for (Res item : resArrayList) {
-                item.setPheromone(item.getPheromone() * (1-rho));
-            }
-
+            //找出本轮迭代最优的蚂蚁
             Ant nc_bestAnt = getBestAnt(ants);
+            //每经过一轮迭代之后，蚂蚁选择的最优物品列表的信息素更新一次
+            ArrayList betterList = nc_bestAnt.getSelected();
+            if(betterList.size() > 0){
+                for(Res res: resArrayList){
+                    //选中后，信息素浓度增加
+                    float delta = 0;
+                    if(betterList.contains(res.getId())) {
+                        delta = Q * res.getValue() / nc_bestAnt.getResValue(); //信息素增量
+                    }
+                    res.setPheromone(delta + res.getPheromone()*(1-rho));
+                    resArrayList.set(res.getId(),res);
+                }
+            }
             ncAnts.add(nc_bestAnt);
             //输出
-            System.out.println("k: " + k);
-            System.out.println("value：" + nc_bestAnt.getResValue());
-            System.out.println("weight: " + nc_bestAnt.getResWeight());
-            System.out.println("selected: " + nc_bestAnt.getSelected().toString());
+//            System.out.println("k: " + k);
+            System.out.println("k:" + k + ", value：" + nc_bestAnt.getResValue());
+//            System.out.println("weight: " + nc_bestAnt.getResWeight());
+//            System.out.println("selected: " + nc_bestAnt.getSelected().toString());
+
+//            for(Ant ant:ants){
+//                System.out.println(ant.getResValue());
+//            }
         }
         for(Ant ant : ncAnts){
             if(maxValue < ant.getResValue()){
@@ -161,10 +170,10 @@ public class AcoKP {
                 resList = ant.getSelected();
             }
         }
-        System.out.println("**********************************************");
-        System.out.println("maxValue:" + maxValue);
-        System.out.println("totalWeight:" + totalWeight);
-        System.out.println("result:" + resList.toString());
+//        System.out.println("**********************************************");
+//        System.out.println("maxValue:" + maxValue);
+//        System.out.println("totalWeight:" + totalWeight);
+//        System.out.println("result:" + resList.toString());
     }
 
     public static void main(String[] args) {
