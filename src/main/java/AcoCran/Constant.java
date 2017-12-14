@@ -18,19 +18,19 @@ public class Constant {
 
     //
     static float Ft = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,0),Math.pow(10,3));
-
+    //FEC计算频率
     static float fc = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,5),Math.pow(10,6));
-
+    //NEC计算频率
     static float fe = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,3),Math.pow(10,4));
-
+    //前传网络传输速率
     static float rf = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,3),Math.pow(10,4));
-
+    //无线网络传输速率
     static float rw = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,3),Math.pow(10,4));
-
+    //
     static float Fe = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,5),Math.pow(10,6));
-
+    //C-RAN
     static float fee = 0;
-
+    //前传容量
     static float R = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,6),Math.pow(10,7));
 
 

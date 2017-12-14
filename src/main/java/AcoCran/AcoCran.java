@@ -22,20 +22,27 @@ public class AcoCran {
 
     private float eta; //启发式因子
 
-    private ArrayList<AcoKP.Ant> ants = new ArrayList<Ant>(); //蚁群
+    private ArrayList<Ant> ants = new ArrayList<Ant>(); //蚁群
 
     private Integer M = 5; //RRHs
     private Integer N = 50; //UEs
 
-    public void initTask(){
-        ArrayList<ArrayList<Task>> tasks = new ArrayList<ArrayList<Task>>();
-      for(int i = 0; i < M; i++){
-          for(int j = 0; j < N; j++){
-           Task task = new Task(Constant.fc,Constant.fe);
-//           tasks.add(task);
+    /**
+     * 初始化计算任务
+     *
+     */
+    public void initTask() {
+        Task task[][] = null;
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                Task item = new Task(Constant.fc, Constant.fe);
+                task[i][j] = item;
+            }
+        }
+    }
 
-          }
-      }
+    public void initAnt(){
+         
     }
 
 
@@ -43,7 +50,6 @@ public class AcoCran {
 
 
     }
-
 
 
 }
