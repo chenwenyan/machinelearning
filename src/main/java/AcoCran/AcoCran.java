@@ -38,7 +38,7 @@ public class AcoCran {
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 Task item = new Task(i, j, 0.0f, Constant.D, Constant.Ft, pheromone);
-                item.setId((i+1)*j);
+                item.setId((i+1)*(j+1) - 1);
                 tasks.add(item);
             }
         }
@@ -68,8 +68,12 @@ public class AcoCran {
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
             if(!curAnt.isSelectedTask(task)){
-                eta = task.getData() / task.getFt();
-                float VAP = (float) (Math.pow(task.getPheromone(), alpha) * (Math.pow(eta, beta)));
+                //FEC
+                float fc = Constant.fc;
+                float time = task.getData()/Constant.rw + task.getData()/Constant.rf + task.getCycle()/fc;
+                eta = fc*time;
+
+                float VAP = (float) (Math.pow(task.getPheromone(), alpha) + (Math.pow(eta, beta)));
                 totalVAP += VAP;
                 CanSelectTask canSelectTask = new CanSelectTask(task.getI(), task.getJ(), VAP, 0);
                 canSelectTasks.add(canSelectTask);
@@ -92,6 +96,11 @@ public class AcoCran {
                 rate = rate - canSelectTask.getP();
             }
         }
+
+        ListIterator<CanSelectTask> taskListIterator = canSelectTasks.listIterator();
+        while(!taskListIterator.hasNext()){
+            return tasks.get(tasks.size()+1).getId();
+        }
         return Integer.MAX_VALUE;
     }
 
@@ -103,8 +112,9 @@ public class AcoCran {
      */
     public Ant getBestAnt(ArrayList<Ant> ants){
         Ant bestAnt = ants.get(0);
+        int maxSum = ants.get(0).getSumTask();
         for (Ant ant:ants) {
-            if(ant.getTaskToFEC().size() + ant.getTaskToNEC().size() > 0){
+            if(ant.getSumTask() > maxSum){
                 bestAnt = ant;
             }
         }
@@ -125,47 +135,61 @@ public class AcoCran {
                 Ant ant = ants.get(j);
                 ArrayList<Task> taskToFEC = new ArrayList<Task>();
                 ArrayList<Task> taskToNEC = new ArrayList<Task>();
-                for (int m = i; m < tasks.size(); m++) {
-                    Task thisTask = tasks.get(getMaxP(ant,tasks));
+                for(int m = 0; m < M; m++){
+                    ant.setCurNECF(0);
                     boolean isSelected = false;
-                    int sum = 0;
-                    //FEC or NEC
-                    if(ant.getCurFECF() + thisTask.getFt() < Constant.Fc || ant.getCurFECF() + thisTask.getFt() < Constant.Fe){
-                        if (ant.getCurFECF() + thisTask.getFt() < Constant.Fc) {
-                            float rf = Constant.fc;
-                            float time = thisTask.getData() / Constant.rw + thisTask.getData() / Constant.rf + thisTask.getCycle() / rf;
-                            if (time < Constant.T && (ant.getCurR() + rf) < Constant.R) {
-//                                System.out.println(" task " + i + "," + j + " assign to FEC");
-                                taskToFEC.add(thisTask);
-                                ant.setTaskToFEC(taskToFEC);
+                    for (int k = 0; k < tasks.size(); k++) {
+                        Task thisTask = tasks.get(getMaxP(ant,tasks));
+                        if(m == tasks.get(k).getI()){
+                            if(ant.getCurFECF() + thisTask.getFt() < Constant.Fc || ant.getCurFECF() + thisTask.getFt() < Constant.Fe) {
+                                if (ant.getCurNECF() + thisTask.getFt() < Constant.Fe) {//NEC
+                                    float fe = Constant.fe;
+                                    float time = thisTask.getData() / Constant.rw + thisTask.getCycle() / fe;
+                                    if (time < Constant.T) {
+                                      System.out.println(" task " + thisTask.getI() + "," + thisTask.getJ() + " assign to NEC");
+                                        taskToNEC.add(thisTask);
+                                        ant.setTaskToNEC(taskToNEC);
+                                        ant.setCurNECF(ant.getCurNECF() + thisTask.getFt());
+                                        ant.setCurNECCycle(ant.getCurNECCycle() + thisTask.getCycle());
+                                        isSelected = true;
+                                    }
+                                } else if (!isSelected && ant.getCurFECF() + thisTask.getFt() < Constant.Fc) {
+                                    float fc = Constant.fc;
+                                    float time = thisTask.getData() / Constant.rw + thisTask.getData() / Constant.rf + thisTask.getCycle() / fc;
+                                    if (time < Constant.T && (ant.getCurR() + fc) < Constant.R) {
+                                      System.out.println(" task " + i + "," + j + " assign to FEC");
+                                        taskToFEC.add(thisTask);
+                                        ant.setTaskToFEC(taskToFEC);
+                                        ant.setCurNECF(ant.getCurFECF() + thisTask.getFt());
+                                        ant.setCurFECCycle(ant.getCurFECCycle() + thisTask.getCycle());
+                                    }
+                                }
+                            }else {
+                                System.out.println("there is no space tp assign task");
                             }
-                        } else if (ant.getCurNECF() + thisTask.getFt() < Constant.Fe) {//NEC
-                            float time = thisTask.getData() / Constant.rw + thisTask.getCycle() / Constant.fe;
-                            if (time < Constant.T) {
-//                                System.out.println(" task " + i + "," + j + " assign to NEC");
-                                taskToNEC.add(thisTask);
+                            if (isSelected){
+                                ant.setSumTask(ant.getSumTask() + 1);
                             }
                         }
-                        ant.setCurFECCycle(ant.getCurNECCycle() + thisTask.getCycle());
-                        ant.setCurFECF(ant.getCurFECF() + thisTask.getFt());
-                        isSelected = true;
-                        sum++;
-                    } else {
-//                        System.out.println("there is no space to assign");
                     }
                 }
             }
             Ant nc_bestAnt = getBestAnt(ants);
             //更新信息素
             ArrayList<Task> selectedTasks = new ArrayList<Task>();
-            selectedTasks.addAll(nc_bestAnt.getTaskToFEC());
-            selectedTasks.addAll(nc_bestAnt.getTaskToNEC());
+            if(nc_bestAnt.getTaskToFEC() != null){
+                selectedTasks.addAll(nc_bestAnt.getTaskToFEC());
+            }
+            if(nc_bestAnt.getTaskToNEC() != null){
+                selectedTasks.addAll(nc_bestAnt.getTaskToNEC());
+            }
             float delta = 0.0f;
             for (int k = 1; k < tasks.size(); k++) {
                 Task task = tasks.get(i);
                 for (Task item : selectedTasks) {
                     if(task.getI() == item.getI() && task.getJ() == item.getJ()){
-                        delta = Q * task.getCycle() / (nc_bestAnt.getCurFECCycle() + nc_bestAnt.getCurNECCycle());//信息素增量
+//                        delta = Q * task.getCycle() / (nc_bestAnt.getCurFECCycle() + nc_bestAnt.getCurNECCycle());//信息素增量
+                        delta = Q ;
                     }
                     task.setPheromone(delta + task.getPheromone()*(1-rho));
                 }
@@ -174,7 +198,7 @@ public class AcoCran {
             ncAnts.add(nc_bestAnt);
         }
         Ant bestAnt = getBestAnt(ncAnts);
-        System.out.println(bestAnt.getTaskToFEC().size() + bestAnt.getTaskToNEC().size());
+        System.out.println(bestAnt.getSumTask());
     }
 
 

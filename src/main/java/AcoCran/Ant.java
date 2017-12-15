@@ -13,6 +13,8 @@ public class Ant {
     private ArrayList<Task> taskToNEC; //选择近端云
     private ArrayList<Task> taskToFEC; //选择远端云
 
+    private Integer sumTask;
+
     //NEC
     private float curNECF;//计算资源
     private float curNECCycle;//计算周期
@@ -78,6 +80,14 @@ public class Ant {
         this.curR = curR;
     }
 
+    public Integer getSumTask() {
+        return sumTask;
+    }
+
+    public void setSumTask(Integer sumTask) {
+        this.sumTask = sumTask;
+    }
+
     public Ant(ArrayList<Task> taskToFEC, ArrayList<Task> taskToNEC,
                float curNECF, float curNECCycle, float curFECF,
                float curFECCycle, float curR){
@@ -88,6 +98,7 @@ public class Ant {
         this.curFECF = curFECF;
         this.curFECCycle = curFECCycle;
         this.curR = curR;
+        this.sumTask = 0;
     }
 
     /**

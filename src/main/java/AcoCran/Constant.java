@@ -11,8 +11,6 @@ public class Constant {
     //时延限制
     static float T = 3;
 
-
-
     //数据量
     static float D = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,0),Math.pow(10,3));
 
@@ -29,7 +27,7 @@ public class Constant {
     //NEC计算资源容量
     static float Fe = (float) Utils.RandomUtil.getRandomDoubleNum( Math.pow(10,5),Math.pow(10,6));
     //FEC计算资源容量
-    static float Fc = (float)Math.pow(10,10);
+    static float Fc = (float)Math.pow(10,8);
     //C-RAN
     static float fee = 0;
     //前传容量
