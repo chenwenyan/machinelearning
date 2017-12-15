@@ -154,10 +154,7 @@ public class AcoKP {
             }
             ncAnts.add(nc_bestAnt);
             //输出
-//            System.out.println("k: " + k);
             System.out.println("k:" + k + ", value：" + nc_bestAnt.getResValue());
-//            System.out.println("weight: " + nc_bestAnt.getResWeight());
-//            System.out.println("selected: " + nc_bestAnt.getSelected().toString());
         }
         for(Ant ant : ncAnts){
             if(maxValue < ant.getResValue()){
@@ -166,10 +163,9 @@ public class AcoKP {
                 resList = ant.getSelected();
             }
         }
-//        System.out.println("**********************************************");
-//        System.out.println("maxValue:" + maxValue);
-//        System.out.println("totalWeight:" + totalWeight);
-//        System.out.println("result:" + resList.toString());
+        System.out.println("maxValue:" + maxValue);
+        System.out.println("totalWeight:" + totalWeight);
+        System.out.println("result:" + resList.toString());
     }
 
     public static void main(String[] args) {
