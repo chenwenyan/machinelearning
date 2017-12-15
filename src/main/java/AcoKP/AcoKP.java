@@ -158,10 +158,6 @@ public class AcoKP {
             System.out.println("k:" + k + ", value：" + nc_bestAnt.getResValue());
 //            System.out.println("weight: " + nc_bestAnt.getResWeight());
 //            System.out.println("selected: " + nc_bestAnt.getSelected().toString());
-
-//            for(Ant ant:ants){
-//                System.out.println(ant.getResValue());
-//            }
         }
         for(Ant ant : ncAnts){
             if(maxValue < ant.getResValue()){

@@ -9,7 +9,7 @@ package AcoKP;
 public class CanSelectRes {
 
     private int id;
-    private float VAP; //信息素浓度
+    private float VAP; //信息素浓度+启发式信息之和
     private float p;  //被选中概率
 
     public int getId() {
