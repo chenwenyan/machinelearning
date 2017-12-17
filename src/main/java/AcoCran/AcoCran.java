@@ -29,7 +29,21 @@ public class AcoCran {
     private Integer M = 5; //RRHs
     private Integer N = 50; //UEs
 
-    private ArrayList<Task> tasks = new ArrayList<Task>();//计算任务
+    private Task[][] tasks = new Task[M][N] ;//计算任务(使用二维数组表示)
+    private ArrayList<FEC> fecs = new ArrayList<FEC>();//fecs
+
+    //最大最小值 用于归一化数据
+    private float maxT = Constant.T;
+    private float minT = 0;
+
+    private float maxFe = Constant.Fe;
+    private float minFe = 0;
+
+    private float maxFc = Constant.Fc;
+    private float minFc = 0;
+
+    private float maxR = Constant.R;
+    private float minR = 0;
 
     /**
      * 初始化计算任务
@@ -39,8 +53,33 @@ public class AcoCran {
             for (int j = 0; j < N; j++) {
                 Task item = new Task(i, j, 0.0f, Constant.D, Constant.Ft, pheromone);
                 item.setId((i+1)*(j+1) - 1);
-                tasks.add(item);
+                tasks[i][j] = item;
             }
+        }
+    }
+
+    /**
+     * 初始化RRH
+     *
+     */
+    public void initFEC(){
+        for (int i = 0; i < M; i++) {
+            float Fe = Constant.Fe;
+            if(Fe > maxFe){
+                maxFe = Fe;
+            }
+            if(Fe < minFe){
+                minFe = Fe;
+            }
+            float R = Constant.R;
+            if(maxR < R){
+                maxR = R;
+            }
+            if(minR < R){
+                minR = R;
+            }
+            FEC fec = new FEC(i,Fe,R);
+            fecs.add(fec);
         }
     }
 
@@ -62,21 +101,32 @@ public class AcoCran {
      * @param tasks
      * @return
      */
-    public int getMaxP(Ant curAnt, ArrayList<Task> tasks) {
+    public int getMaxP(Ant curAnt, Task[][] tasks) {
         ArrayList<CanSelectTask> canSelectTasks = new ArrayList<CanSelectTask>();
         float totalVAP = 0.0f;
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            if(!curAnt.isSelectedTask(task)){
-                //FEC
+        float aggreFEC;
+        float aggreNEC;
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                float rw = Constant.rw;
                 float fc = Constant.fc;
-                float time = task.getData()/Constant.rw + task.getData()/Constant.rf + task.getCycle()/fc;
-                eta = fc*time;
+                float fe = Constant.fe;
+                float rf = Constant.rf;
+                Task task = tasks[i][j];
+                if(curAnt.isSelectedTask(task)){
+                    float FEC_t = task.getData()/rw + task.getData()/rf + task.getFt()/fc;
+                    float NEC_t = task.getData()/rw + task.getFt()/fe;
+                    aggreFEC = (FEC_t - minT)/(maxT-minT) + (fc-minFc)/(maxFc-minFc) + (rf - minR)/(maxR-minR);
+                    aggreNEC = (NEC_t - minT)/(maxT - minT) + (fe - minFe)/(maxFe - minFe);
 
-                float VAP = (float) (Math.pow(task.getPheromone(), alpha) + (Math.pow(eta, beta)));
-                totalVAP += VAP;
-                CanSelectTask canSelectTask = new CanSelectTask(task.getI(), task.getJ(), VAP, 0);
-                canSelectTasks.add(canSelectTask);
+                    eta = (float) ( aggreFEC * 0.3 + aggreNEC * 0.7);
+
+                    float vap =  (float) (Math.pow(task.getPheromone(), alpha) + (Math.pow(eta, beta)));
+                    totalVAP += vap;
+
+                    CanSelectTask canSelectTask = new CanSelectTask(task.getI(), task.getJ(), vap, 0);
+                    canSelectTasks.add(canSelectTask);
+                }
             }
         }
 
@@ -86,6 +136,7 @@ public class AcoCran {
             task.setP(task.getVAP() / totalVAP);
         }
 
+        //轮盘赌法选择计算任务
         float rate = (float) Math.random();
         ListIterator<CanSelectTask> iter = canSelectTasks.listIterator();
         while (iter.hasNext()) {
@@ -99,7 +150,7 @@ public class AcoCran {
 
         ListIterator<CanSelectTask> taskListIterator = canSelectTasks.listIterator();
         while(!taskListIterator.hasNext()){
-            return tasks.get(tasks.size()+1).getId();
+            return tasks[M][N].getId();
         }
         return Integer.MAX_VALUE;
     }
@@ -135,10 +186,13 @@ public class AcoCran {
                 Ant ant = ants.get(j);
                 ArrayList<Task> taskToFEC = new ArrayList<Task>();
                 ArrayList<Task> taskToNEC = new ArrayList<Task>();
+
                 for(int m = 0; m < M; m++){
                     ant.setCurNECF(0);
                     boolean isSelected = false;
-                    for (int k = 0; k < tasks.size(); k++) {
+                    for (int n = 0; n < N; n++) {
+
+
                         Task thisTask = tasks.get(getMaxP(ant,tasks));
                         if(m == tasks.get(k).getI()){
                             if(ant.getCurFECF() + thisTask.getFt() < Constant.Fc || ant.getCurFECF() + thisTask.getFt() < Constant.Fe) {

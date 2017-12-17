@@ -12,9 +12,9 @@ import java.util.ListIterator;
  */
 public class AcoKP {
 
-    private int NC = 500;//迭代次数
-    private int antNum = 10;//蚂蚁数量
-    private float Q = 20.0f; //用于控制信息素增量到适度范围
+    private int NC = 200;//迭代次数
+    private int antNum = 20;//蚂蚁数量（一般设置的与物品数目相等）
+    private float Q = 1.0f; //用于控制信息素增量到适度范围
     private float rho = 0.1f;//蒸发系数
 
     private float alpha = 3;  //信息素重要程度
@@ -79,7 +79,7 @@ public class AcoKP {
             Res res = resList.get(i);
             if(!curAnt.isSelectedRes(i)){
                 eta = res.getValue()/res.getWeight(); //启发信息
-                float vap = (float) (Math.pow(res.getPheromone(),alpha) + Math.pow(eta,beta));
+                float vap = (float) (Math.pow(res.getPheromone(),alpha) * Math.pow(eta,beta));
                 totalVAP += vap;
                 CanSelectRes canSelectRes = new CanSelectRes(res.getId(),vap);
                 canSelect.add(canSelectRes);
