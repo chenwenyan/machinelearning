@@ -120,7 +120,7 @@ public class AcoKP {
     public void antSelect() {
 
         float maxValue = 0;//最大价值
-        float totalWeight = 0;//背包索状物品重量之和
+        float totalWeight = 0;//背包所装物品重量之和
         List<Integer> resList = null; 
         ArrayList<Ant> ncAnts = new ArrayList<Ant>();//每次迭代的最优解
 
@@ -148,7 +148,7 @@ public class AcoKP {
                     if(betterList.contains(res.getId())) {
                         delta = Q * res.getValue() / nc_bestAnt.getResValue(); //信息素增量
                     }
-                    res.setPheromone(delta + res.getPheromone()*(1-rho));
+                    res.setPheromone(delta + res.getPheromone()*(1-rho));//所有物品信息素挥发一次
                     resArrayList.set(res.getId(),res);
                 }
             }
@@ -169,9 +169,9 @@ public class AcoKP {
     }
 
     public static void main(String[] args) {
-        AcoKP acoBP = new AcoKP();
-        acoBP.init();
-        acoBP.antSelect();
+        AcoKP acokp = new AcoKP();
+        acokp.init();
+        acokp.antSelect();
     }
 
 }
